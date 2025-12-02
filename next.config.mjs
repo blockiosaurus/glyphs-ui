@@ -12,4 +12,15 @@ export default withBundleAnalyzer({
   experimental: {
     optimizePackageImports: ['@mantine/core', '@mantine/hooks'],
   },
+  async headers() {
+    return [
+      {
+        source: '/:path*.json',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET, OPTIONS' },
+        ],
+      },
+    ];
+  },
 });
