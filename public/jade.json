@@ -1,0 +1,11 @@
+{
+  "name": "Jade Glyph",
+  "symbol": "GLYPH",
+  "description": "A rare jade glyph.",
+  "image": "https://glyphs.quest/Jade.png",
+  "external_url": "https://glyphs.quest",
+  "attributes": [
+    { "trait_type": "Rarity", "value": "Rare" },
+    { "trait_type": "Material", "value": "Stone" }
+  ]
+}

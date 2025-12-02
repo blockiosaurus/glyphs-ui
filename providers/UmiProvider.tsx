@@ -5,6 +5,7 @@ import { ReactNode, useMemo } from 'react';
 import { dasApi } from '@metaplex-foundation/digital-asset-standard-api';
 import { mplCore } from '@metaplex-foundation/mpl-core';
 import { generateSigner, signerIdentity } from '@metaplex-foundation/umi';
+import { bglGlyphs } from '@breadheads/bgl-glyphs';
 import { UmiContext } from './useUmi';
 
 export const UmiProvider = ({
@@ -23,7 +24,8 @@ export const UmiProvider = ({
   const umi = useMemo(() => {
     const u = createUmi(connection)
       .use(mplCore())
-      .use(dasApi());
+      .use(dasApi())
+      .use(bglGlyphs());
 
     if (wallet.connected) {
       return u.use(walletAdapterIdentity(wallet));

@@ -12,11 +12,11 @@ import {
   Button,
   Skeleton,
   Alert,
-  Tooltip,
 } from '@mantine/core';
 import { IconCircleDot, IconSun, IconInfinity, IconTallymark4, IconPuzzle2, IconSkull, IconCircleRectangle, IconPrism, IconAlertCircle, IconRefresh } from '@tabler/icons-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Umi } from '@metaplex-foundation/umi';
+import { generateSigner, publicKey, Umi } from '@metaplex-foundation/umi';
+import { excavate, GLOBAL_SIGNER_ID, SLOT_TRACKER_ID } from '@breadheads/bgl-glyphs';
 import classes from './CountdownCards.module.css';
 import { useUmi } from '@/providers/useUmi';
 
@@ -109,6 +109,7 @@ function getCountdown(
 export function CountdownCards() {
   const umi = useUmi();
   const [loading, setLoading] = useState(true);
+  const [excavating, setExcavating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [lastUpdatedDisplay, setLastUpdatedDisplay] = useState('');
@@ -226,6 +227,26 @@ export function CountdownCards() {
     setLoading(false);
   };
 
+  const handleExcavate = async () => {
+    setExcavating(true);
+    try {
+      // TODO: Implement excavation logic
+      // - Get current slot for rarity calculation
+      // - Build and send mint transaction
+      // - Handle success/failure states
+      console.log('Excavating Glyph');
+      await excavate(umi, {
+        asset: generateSigner(umi),
+        collection: publicKey(process.env.NEXT_PUBLIC_GLYPHS_COLLECTION_MINT!),
+        slotTracker: SLOT_TRACKER_ID,
+        glyphSigner: GLOBAL_SIGNER_ID,
+        mplCore: undefined,
+      }).sendAndConfirm(umi);
+    } finally {
+      setExcavating(false);
+    }
+  };
+
   return (
     <Container size="lg" className={classes.wrapper}>
       <Title order={2} className={classes.title} ta="center" mt="sm">
@@ -319,20 +340,15 @@ export function CountdownCards() {
       </SimpleGrid>
 
       <Center mt="xl">
-        <Tooltip
-          label="Glyph excavation will be available soon. Stay tuned for the launch date."
-          position="bottom"
-          withArrow
+        <Button
+          size="xl"
+          radius="xl"
+          className={classes.excavateButton}
+          onClick={handleExcavate}
+          loading={excavating}
         >
-          <Button
-            size="xl"
-            radius="xl"
-            disabled
-            className={classes.excavateButton}
-          >
-            Excavate Glyphs
-          </Button>
-        </Tooltip>
+          Excavate Glyphs
+        </Button>
       </Center>
     </Container>
   );

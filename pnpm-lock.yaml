@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@breadheads/bgl-glyphs':
+    specifier: ^0.1.0
+    version: 0.1.0(@metaplex-foundation/umi@0.8.10)(@noble/hashes@1.8.0)(@solana/web3.js@1.98.4)
   '@mantine/carousel':
     specifier: ^7.3.2
     version: 7.17.8(@mantine/core@7.17.8)(@mantine/hooks@7.17.8)(embla-carousel-react@8.6.0)(react-dom@18.2.0)(react@18.2.0)
@@ -1613,6 +1616,22 @@ packages:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: true
 
+  /@breadheads/bgl-glyphs@0.1.0(@metaplex-foundation/umi@0.8.10)(@noble/hashes@1.8.0)(@solana/web3.js@1.98.4):
+    resolution: {integrity: sha512-eHr+Gc1TN2EF6GoLfN4zhb9XSa0uOOYX0mVzX/7vEm1hnhJQvE6uBFI2U470sgqLTQ8cnJ7PN9u0VwArHFNcQg==}
+    peerDependencies:
+      '@metaplex-foundation/umi': ^0.8.2
+    dependencies:
+      '@metaplex-foundation/mpl-core': 0.4.7(@metaplex-foundation/umi@0.8.10)(@noble/hashes@1.8.0)
+      '@metaplex-foundation/mpl-toolbox': 0.8.1(@metaplex-foundation/umi@0.8.10)
+      '@metaplex-foundation/umi': 0.8.10
+      '@metaplex-foundation/umi-bundle-defaults': 0.8.10(@metaplex-foundation/umi@0.8.10)(@solana/web3.js@1.98.4)
+      dotenv: 17.2.3
+    transitivePeerDependencies:
+      - '@noble/hashes'
+      - '@solana/web3.js'
+      - encoding
+    dev: false
+
   /@colors/colors@1.5.0:
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
@@ -2633,6 +2652,14 @@ packages:
     dependencies:
       '@metaplex-foundation/umi': 0.8.10
       '@noble/hashes': 1.8.0
+    dev: false
+
+  /@metaplex-foundation/mpl-toolbox@0.8.1(@metaplex-foundation/umi@0.8.10):
+    resolution: {integrity: sha512-PYU+qU6hg+h6V42z+MDnBTiWZXTTzWhIn5ieyRZYyszTru/LiJKHdsHGKe1VBfuXEuRdfRhAzivMjquZVaqO4A==}
+    peerDependencies:
+      '@metaplex-foundation/umi': ^0.8.2
+    dependencies:
+      '@metaplex-foundation/umi': 0.8.10
     dev: false
 
   /@metaplex-foundation/mpl-toolbox@0.9.4(@metaplex-foundation/umi@0.8.10):
@@ -11426,6 +11453,11 @@ packages:
     resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
     engines: {node: '>=12'}
     dev: true
+
+  /dotenv@17.2.3:
+    resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
+    engines: {node: '>=12'}
+    dev: false
 
   /draggabilly@3.0.0:
     resolution: {integrity: sha512-aEs+B6prbMZQMxc9lgTpCBfyCUhRur/VFucHhIOvlvvdARTj7TcDmX/cdOUtqbjJJUh7+agyJXR5Z6IFe1MxwQ==}

@@ -1,0 +1,11 @@
+{
+  "name": "Obsidian Glyph",
+  "symbol": "GLYPH",
+  "description": "An epic obsidian glyph.",
+  "image": "https://glyphs.quest/Obsidian.gif",
+  "external_url": "https://glyphs.quest",
+  "attributes": [
+    { "trait_type": "Rarity", "value": "Epic" },
+    { "trait_type": "Material", "value": "Stone" }
+  ]
+}

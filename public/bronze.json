@@ -1,0 +1,11 @@
+{
+  "name": "Bronze Glyph",
+  "symbol": "GLYPH",
+  "description": "An uncommon bronze glyph.",
+  "image": "https://glyphs.quest/Bronze.png",
+  "external_url": "https://glyphs.quest",
+  "attributes": [
+    { "trait_type": "Rarity", "value": "Uncommon" },
+    { "trait_type": "Material", "value": "Metal" }
+  ]
+}

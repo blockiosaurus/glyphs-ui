@@ -1,0 +1,11 @@
+{
+  "name": "Neon Glyph",
+  "symbol": "GLYPH",
+  "description": "A legendary neon glyph.",
+  "image": "https://glyphs.quest/Neon.gif",
+  "external_url": "https://glyphs.quest",
+  "attributes": [
+    { "trait_type": "Rarity", "value": "Legendary" },
+    { "trait_type": "Material", "value": "Energy" }
+  ]
+}
