@@ -2,8 +2,8 @@
   "name": "Silver Glyph",
   "symbol": "GLYPH",
   "description": "A rare silver glyph.",
-  "image": "https://glyphs.quest/Silver.png",
-  "external_url": "https://glyphs.quest",
+  "image": "https://www.glyphs.quest/Silver.png",
+  "external_url": "https://www.glyphs.quest",
   "attributes": [
     { "trait_type": "Rarity", "value": "Rare" },
     { "trait_type": "Material", "value": "Metal" }

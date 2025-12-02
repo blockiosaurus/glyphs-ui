@@ -2,8 +2,8 @@
   "name": "Stone Glyph",
   "symbol": "GLYPH",
   "description": "A common stone glyph.",
-  "image": "https://glyphs.quest/Stone.png",
-  "external_url": "https://glyphs.quest",
+  "image": "https://www.glyphs.quest/Stone.png",
+  "external_url": "https://www.glyphs.quest",
   "attributes": [
     { "trait_type": "Rarity", "value": "Common" },
     { "trait_type": "Material", "value": "Stone" }

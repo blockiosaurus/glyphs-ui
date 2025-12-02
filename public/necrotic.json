@@ -2,8 +2,8 @@
   "name": "Necrotic Glyph",
   "symbol": "GLYPH",
   "description": "A legendary necrotic glyph.",
-  "image": "https://glyphs.quest/Necrotic.gif",
-  "external_url": "https://glyphs.quest",
+  "image": "https://www.glyphs.quest/Necrotic.gif",
+  "external_url": "https://www.glyphs.quest",
   "attributes": [
     { "trait_type": "Rarity", "value": "Legendary" },
     { "trait_type": "Material", "value": "Energy" }

@@ -2,8 +2,8 @@
   "name": "Gold Glyph",
   "symbol": "GLYPH",
   "description": "An epic gold glyph.",
-  "image": "https://glyphs.quest/Gold.png",
-  "external_url": "https://glyphs.quest",
+  "image": "https://www.glyphs.quest/Gold.png",
+  "external_url": "https://www.glyphs.quest",
   "attributes": [
     { "trait_type": "Rarity", "value": "Epic" },
     { "trait_type": "Material", "value": "Metal" }
