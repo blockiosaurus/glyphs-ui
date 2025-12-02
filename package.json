@@ -1,5 +1,5 @@
 {
-  "name": "mantine-next-template",
+  "name": "glyphs-ui",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -100,5 +100,5 @@
     "ts-jest": "^29.1.1",
     "typescript": "5.2.2"
   },
-  "packageManager": "yarn@4.0.1"
+  "packageManager": "pnpm@8.9.0"
 }

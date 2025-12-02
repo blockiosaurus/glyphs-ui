@@ -1,20 +1,21 @@
 import '@mantine/core/styles.css';
-import React from 'react';
-import { MantineProvider, ColorSchemeScript } from '@mantine/core';
-import { NavigationProgress } from '@mantine/nprogress';
-
-import { theme } from '../theme';
-
 import '@mantine/dropzone/styles.css';
 import '@mantine/carousel/styles.css';
 import '@mantine/notifications/styles.css';
 import '@mantine/code-highlight/styles.css';
 import '@solana/wallet-adapter-react-ui/styles.css';
+import './globals.css';
+
+import React from 'react';
+import { MantineProvider, ColorSchemeScript } from '@mantine/core';
+import { NavigationProgress } from '@mantine/nprogress';
+
+import { theme } from '../theme';
 import { Providers } from '@/providers/Providers';
 
 export const metadata = {
-  title: 'Metaplex Template UI',
-  description: 'A template for Solana UIs using Mantine and Metaplex.',
+  title: 'Glyphs Quest',
+  description: 'Uncover rare digital artifacts on Solana. Excavate and unlock the power of Metaplex Core glyphs.',
 };
 
 export default function RootLayout({ children }: { children: any }) {

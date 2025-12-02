@@ -1,38 +1,45 @@
 .inner {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: var(--mantine-spacing-xl);
   padding-top: calc(var(--mantine-spacing-xl) * 2);
   padding-bottom: calc(var(--mantine-spacing-xl));
+
+  @media (max-width: $mantine-breakpoint-md) {
+    flex-direction: column;
+    text-align: center;
+  }
 }
 
 .content {
-  /* max-width: rem(480px);
-  margin-right: calc(var(--mantine-spacing-xl) * 3);
+  max-width: rem(480px);
 
   @media (max-width: $mantine-breakpoint-md) {
     max-width: 100%;
-    margin-right: 0;
-  } */
+  }
 }
 
 .heroSection {
   background-color: #000;
-  background-image: url(/background.png);
+  background-image: url("/background.png");
   background-position: 0 0;
   background-size: cover;
 }
 
 .title {
-  /* color: light-dark(var(--mantine-color-black), var(--mantine-color-white)); */
   color: var(--mantine-color-neonBlue-2);
   font-family:
-    Greycliff CF,
+    "Greycliff CF",
     var(--mantine-font-family);
   font-size: rem(44px);
   line-height: 1.2;
   font-weight: 900;
-
-  text-shadow: 0px 0px 5px var(--mantine-color-neonBlue-5);
+  letter-spacing: 0.02em;
+  text-shadow:
+    0 0 10px var(--mantine-color-neonBlue-5),
+    0 0 30px rgba(58, 134, 255, 0.3),
+    0 0 60px rgba(58, 134, 255, 0.15);
 
   @media (max-width: $mantine-breakpoint-xs) {
     font-size: rem(28px);

@@ -1,6 +1,30 @@
+/* ============================================
+   Animations
+   ============================================ */
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px var(--rarity-color, rgba(58, 134, 255, 0.3)); }
+  50% { box-shadow: 0 0 15px var(--rarity-color, rgba(58, 134, 255, 0.6)); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ============================================
+   Typography
+   ============================================ */
+
 .title {
   font-size: rem(34px);
   font-weight: 900;
+  letter-spacing: 0.02em;
 
   @media (max-width: $mantine-breakpoint-sm) {
     font-size: rem(24px);
@@ -14,32 +38,206 @@
   &::after {
     content: '';
     display: block;
-    background-color: var(--mantine-color-blue-filled);
-    width: rem(45px);
-    height: rem(2px);
+    background-color: var(--mantine-color-neonBlue-4);
+    width: rem(60px);
+    height: rem(3px);
     margin-top: var(--mantine-spacing-sm);
     margin-left: auto;
     margin-right: auto;
+    border-radius: rem(2px);
   }
 }
 
+/* ============================================
+   Card Styles with Glass Morphism
+   ============================================ */
+
 .card {
-  border: rem(1px) solid light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
-  background-color: var(--mantine-color-dark-8);
+  --rarity-color: rgba(58, 134, 255, 0.4);
+  --rarity-border: var(--mantine-color-neonBlue-9);
+  --rarity-glow: rgba(58, 134, 255, 0.15);
+
+  position: relative;
+  border: rem(1px) solid var(--rarity-border);
+  background: linear-gradient(
+    135deg,
+    rgba(20, 20, 25, 0.8) 0%,
+    rgba(58, 134, 255, 0.05) 100%
+  );
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  overflow: hidden;
+
+  /* Subtle inner glow */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse at 50% 0%,
+      var(--rarity-glow) 0%,
+      transparent 60%
+    );
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &:hover {
+    border-color: var(--rarity-color);
+    box-shadow: 0 0 25px var(--rarity-glow), 0 8px 32px rgba(0, 0, 0, 0.3);
+    transform: translateY(-4px);
+  }
 }
+
+/* Rarity-specific colors */
+.rarityStone {
+  --rarity-color: rgba(140, 140, 150, 0.5);
+  --rarity-border: rgba(140, 140, 150, 0.3);
+  --rarity-glow: rgba(140, 140, 150, 0.15);
+}
+
+.rarityJade {
+  --rarity-color: rgba(0, 200, 150, 0.5);
+  --rarity-border: rgba(0, 200, 150, 0.3);
+  --rarity-glow: rgba(0, 200, 150, 0.15);
+}
+
+.rarityBronze {
+  --rarity-color: rgba(205, 127, 50, 0.5);
+  --rarity-border: rgba(205, 127, 50, 0.3);
+  --rarity-glow: rgba(205, 127, 50, 0.15);
+}
+
+.raritySilver {
+  --rarity-color: rgba(192, 192, 210, 0.5);
+  --rarity-border: rgba(192, 192, 210, 0.3);
+  --rarity-glow: rgba(192, 192, 210, 0.15);
+}
+
+.rarityGold {
+  --rarity-color: rgba(255, 215, 0, 0.5);
+  --rarity-border: rgba(255, 215, 0, 0.3);
+  --rarity-glow: rgba(255, 215, 0, 0.2);
+}
+
+.rarityObsidian {
+  --rarity-color: rgba(75, 0, 130, 0.6);
+  --rarity-border: rgba(75, 0, 130, 0.4);
+  --rarity-glow: rgba(75, 0, 130, 0.2);
+}
+
+.rarityNeon {
+  --rarity-color: rgba(255, 0, 110, 0.5);
+  --rarity-border: rgba(255, 0, 110, 0.3);
+  --rarity-glow: rgba(255, 0, 110, 0.2);
+}
+
+.rarityNecrotic {
+  --rarity-color: rgba(50, 205, 50, 0.5);
+  --rarity-border: rgba(50, 205, 50, 0.3);
+  --rarity-glow: rgba(50, 205, 50, 0.2);
+}
+
+/* ============================================
+   Card Title with animated underline
+   ============================================ */
 
 .cardTitle {
   &::after {
     content: '';
     display: block;
-    background-color: var(--mantine-color-neonBlue-filled);
+    background: linear-gradient(
+      90deg,
+      var(--rarity-color) 0%,
+      transparent 100%
+    );
     width: rem(45px);
-    height: rem(2px);
+    height: rem(3px);
     margin-top: var(--mantine-spacing-sm);
+    border-radius: rem(2px);
+    transition: width 0.3s ease, opacity 0.3s ease;
   }
+}
+
+.card:hover .cardTitle::after {
+  width: rem(70px);
+  opacity: 1;
+}
+
+/* ============================================
+   Icon Animations
+   ============================================ */
+
+.cardIcon {
+  transition: transform 0.3s ease, filter 0.3s ease;
+  filter: drop-shadow(0 0 3px var(--rarity-color));
+}
+
+.card:hover .cardIcon {
+  animation: float 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px var(--rarity-color));
+}
+
+/* ============================================
+   Badge with Pulsing Glow
+   ============================================ */
+
+.countdownBadge {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+  animation: pulse-glow 2s ease-in-out infinite;
+  border: rem(1px) solid var(--rarity-color);
+  background: linear-gradient(
+    135deg,
+    rgba(20, 20, 30, 0.9) 0%,
+    rgba(58, 134, 255, 0.1) 100%
+  );
+}
+
+/* Shimmer effect for low countdown values */
+.countdownBadge.imminent {
+  background: linear-gradient(
+    90deg,
+    rgba(20, 20, 30, 0.9) 0%,
+    rgba(255, 0, 110, 0.3) 50%,
+    rgba(20, 20, 30, 0.9) 100%
+  );
+  background-size: 200% 100%;
+  animation: pulse-glow 1s ease-in-out infinite, shimmer 2s linear infinite;
 }
 
 .wrapper {
   padding-top: calc(var(--mantine-spacing-md));
   padding-bottom: calc(var(--mantine-spacing-md));
+}
+
+.excavateButton {
+  font-size: rem(24px);
+  line-height: 1.4;
+  height: auto;
+  padding: rem(16px) rem(48px);
+  background: linear-gradient(
+    135deg,
+    var(--mantine-color-neonPurple-6) 0%,
+    var(--mantine-color-neonBlue-6) 100%
+  );
+  border: rem(2px) solid var(--mantine-color-neonBlue-5);
+  transition: all 0.3s ease;
+
+  &:disabled {
+    background: linear-gradient(
+      135deg,
+      var(--mantine-color-dark-5) 0%,
+      var(--mantine-color-dark-6) 100%
+    );
+    border-color: var(--mantine-color-dark-4);
+    color: var(--mantine-color-dark-2);
+    opacity: 0.8;
+  }
+
+  &:not(:disabled):hover {
+    box-shadow: 0 0 30px rgba(58, 134, 255, 0.4);
+    transform: translateY(-2px);
+  }
 }

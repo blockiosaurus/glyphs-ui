@@ -5,57 +5,50 @@ import {
   SimpleGrid,
   Container,
   rem,
-  useMantineTheme,
   Badge,
   Group,
   Stack,
   Center,
+  Button,
+  Skeleton,
+  Alert,
+  Tooltip,
 } from '@mantine/core';
-import { IconCircleDot, IconSun, IconInfinity, IconTallymark4, IconPuzzle2, IconSkull, IconCircleRectangle, IconPrism } from '@tabler/icons-react';
-import { useCallback, useEffect, useState } from 'react';
-import { useInterval } from '@mantine/hooks';
+import { IconCircleDot, IconSun, IconInfinity, IconTallymark4, IconPuzzle2, IconSkull, IconCircleRectangle, IconPrism, IconAlertCircle, IconRefresh } from '@tabler/icons-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Umi } from '@metaplex-foundation/umi';
 import classes from './CountdownCards.module.css';
 import { useUmi } from '@/providers/useUmi';
 
-const initialData = [
-  {
-    title: 'Stone',
-    icon: IconCircleDot,
-  },
-  {
-    title: 'Jade',
-    icon: IconCircleRectangle,
-  },
-  {
-    title: 'Bronze',
-    icon: IconPrism,
-  },
-  {
-    title: 'Silver',
-    icon: IconPuzzle2,
-  },
-  {
-    title: 'Gold',
-    icon: IconSun,
-  },
-  {
-    title: 'Obsidian',
-    icon: IconInfinity,
-  },
-  {
-    title: 'Neon',
-    icon: IconTallymark4,
-  },
-  {
-    title: 'Necrotic',
-    icon: IconSkull,
-  },
-];
+// Rarity configuration with power-of-two thresholds
+const RARITIES = [
+  { title: 'Stone', icon: IconCircleDot, type: 'fixed' as const, value: 1, cssClass: 'rarityStone' },
+  { title: 'Jade', icon: IconCircleRectangle, type: 'power' as const, power: 10, cssClass: 'rarityJade' },
+  { title: 'Bronze', icon: IconPrism, type: 'epoch' as const, cssClass: 'rarityBronze' },
+  { title: 'Silver', icon: IconPuzzle2, type: 'power' as const, power: 20, cssClass: 'raritySilver' },
+  { title: 'Gold', icon: IconSun, type: 'power' as const, power: 22, cssClass: 'rarityGold' },
+  { title: 'Obsidian', icon: IconInfinity, type: 'power' as const, power: 24, cssClass: 'rarityObsidian' },
+  { title: 'Neon', icon: IconTallymark4, type: 'power' as const, power: 26, cssClass: 'rarityNeon' },
+  { title: 'Necrotic', icon: IconSkull, type: 'mystery' as const, cssClass: 'rarityNecrotic' },
+] as const;
+
+// Threshold for "imminent" badge animation (slots remaining)
+const IMMINENT_THRESHOLD = 100;
+
+// Default slot duration in ms (Solana averages ~400ms)
+const DEFAULT_SLOT_DURATION_MS = 400;
+const FETCH_INTERVAL_MS = 5000;
+const TICK_INTERVAL_MS = 100; // Update display frequently for smooth countdown
 
 interface EpochInfo {
   slotsInEpoch: number;
   slotIndex: number;
+}
+
+interface SlotSnapshot {
+  slot: number;
+  epochSlotsRemaining: number;
+  timestamp: number;
 }
 
 function calcSlotsUntil(currentSlot: number, powerOfTwo: number): number {
@@ -63,116 +56,284 @@ function calcSlotsUntil(currentSlot: number, powerOfTwo: number): number {
   return nextPowerOfTwo - (currentSlot % nextPowerOfTwo);
 }
 
-async function getSlotsUntilNextEpoch(umi: Umi): Promise<number> {
-  const epochInfo: EpochInfo = await umi.rpc.call('getEpochInfo');
-  return epochInfo.slotsInEpoch - epochInfo.slotIndex;
+async function fetchSlotData(umi: Umi): Promise<SlotSnapshot> {
+  const [currentSlot, epochInfo] = await Promise.all([
+    umi.rpc.getSlot(),
+    umi.rpc.call('getEpochInfo') as Promise<EpochInfo>,
+  ]);
+  return {
+    slot: currentSlot,
+    epochSlotsRemaining: epochInfo.slotsInEpoch - epochInfo.slotIndex,
+    timestamp: Date.now(),
+  };
 }
 
-function numberToString(value: number): string {
+function formatSlotCount(value: number): string {
   if (value > 1e6) {
     return `${(value / 1e6).toFixed(1)}m`;
   }
-  return value.toString();
+  if (value > 1e4) {
+    return `${(value / 1e3).toFixed(1)}k`;
+  }
+  return Math.max(0, Math.floor(value)).toLocaleString();
+}
+
+function formatLastUpdated(date: Date | null): string {
+  if (!date) return '';
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (seconds < 5) return 'Just now';
+  if (seconds < 60) return `${seconds}s ago`;
+  return `${Math.floor(seconds / 60)}m ago`;
+}
+
+// Calculate countdown for a rarity based on estimated current slot
+function getCountdown(
+  rarity: (typeof RARITIES)[number],
+  estimatedSlot: number,
+  estimatedEpochRemaining: number
+): number | null {
+  switch (rarity.type) {
+    case 'fixed':
+      return rarity.value;
+    case 'power':
+      return calcSlotsUntil(estimatedSlot, rarity.power);
+    case 'epoch':
+      return Math.max(0, estimatedEpochRemaining);
+    case 'mystery':
+      return null;
+    default:
+      return 0;
+  }
 }
 
 export function CountdownCards() {
-  const theme = useMantineTheme();
   const umi = useUmi();
-  const [data, setData] = useState(initialData);
-  const [countdowns, setCountdowns] = useState<Map<string, string>>(new Map([
-    ['Stone', numberToString(1)],
-    ['Jade', numberToString(0)],
-    ['Bronze', numberToString(0)],
-    ['Silver', numberToString(0)],
-    ['Gold', numberToString(0)],
-    ['Obsidian', numberToString(0)],
-    ['Neon', numberToString(0)],
-    ['Necrotic', '?????'],
-  ]));
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [lastUpdatedDisplay, setLastUpdatedDisplay] = useState('');
 
-  // const features = ;
+  // Snapshot from last fetch - used as baseline for interpolation
+  const snapshotRef = useRef<SlotSnapshot | null>(null);
+  // Estimated slot duration, calibrated from fetch intervals
+  const slotDurationRef = useRef(DEFAULT_SLOT_DURATION_MS);
+  // Store previous snapshot for slot duration calibration
+  const prevSnapshotRef = useRef<SlotSnapshot | null>(null);
 
+  // Current display values (updated frequently)
+  const [displayCounts, setDisplayCounts] = useState<Map<string, { formatted: string; raw: number | null }>>(() =>
+    new Map(RARITIES.map((r) => [r.title, { formatted: r.type === 'mystery' ? '?????' : '—', raw: null }]))
+  );
+
+  // Fetch fresh slot data and rebase
+  const fetchAndRebase = useCallback(async () => {
+    try {
+      const snapshot = await fetchSlotData(umi);
+
+      // Calibrate slot duration if we have a previous snapshot
+      if (prevSnapshotRef.current) {
+        const timeDelta = snapshot.timestamp - prevSnapshotRef.current.timestamp;
+        const slotDelta = snapshot.slot - prevSnapshotRef.current.slot;
+        if (slotDelta > 0 && timeDelta > 0) {
+          const measuredDuration = timeDelta / slotDelta;
+          // Smooth the estimate (weighted average with previous)
+          slotDurationRef.current = slotDurationRef.current * 0.7 + measuredDuration * 0.3;
+        }
+      }
+
+      prevSnapshotRef.current = snapshotRef.current;
+      snapshotRef.current = snapshot;
+      setError(null);
+      setLastUpdated(new Date());
+      return true;
+    } catch (err) {
+      setError('The excavation network is unreachable. Please check your connection and try again.');
+      return false;
+    }
+  }, [umi]);
+
+  // Interpolate current slot based on time elapsed since snapshot
+  const estimateCurrentState = useCallback(() => {
+    const snapshot = snapshotRef.current;
+    if (!snapshot) return null;
+
+    const elapsed = Date.now() - snapshot.timestamp;
+    const slotsElapsed = elapsed / slotDurationRef.current;
+
+    return {
+      slot: snapshot.slot + slotsElapsed,
+      epochRemaining: snapshot.epochSlotsRemaining - slotsElapsed,
+    };
+  }, []);
+
+  // Update display counts based on estimated slot
+  const updateDisplay = useCallback(() => {
+    const state = estimateCurrentState();
+    if (!state) return;
+
+    const newCounts = new Map<string, { formatted: string; raw: number | null }>();
+    RARITIES.forEach((rarity) => {
+      const count = getCountdown(rarity, state.slot, state.epochRemaining);
+      newCounts.set(rarity.title, {
+        formatted: count === null ? '?????' : formatSlotCount(count),
+        raw: count,
+      });
+    });
+    setDisplayCounts(newCounts);
+  }, [estimateCurrentState]);
+
+  // Fast tick for smooth countdown display
   useEffect(() => {
-    const dataWithCountdowns = initialData.map((feature) => ({
-      title: feature.title,
-      icon: feature.icon,
-      countdown: countdowns.get(feature.title),
-    }));
+    const tickInterval = setInterval(updateDisplay, TICK_INTERVAL_MS);
+    return () => clearInterval(tickInterval);
+  }, [updateDisplay]);
 
-    setData(dataWithCountdowns);
-  }, [countdowns]);
-
-  const fetchAndUpdate = useCallback(async () => {
-    const currentSlot = await umi.rpc.getSlot();
-    const slotsUntilNextEpoch = await getSlotsUntilNextEpoch(umi);
-    return new Map([
-      ['Stone', numberToString(1)],
-      ['Jade', numberToString(calcSlotsUntil(currentSlot, 10))],
-      ['Bronze', numberToString(slotsUntilNextEpoch)],
-      ['Silver', numberToString(calcSlotsUntil(currentSlot, 20))],
-      ['Gold', numberToString(calcSlotsUntil(currentSlot, 22))],
-      ['Obsidian', numberToString(calcSlotsUntil(currentSlot, 24))],
-      ['Neon', numberToString(calcSlotsUntil(currentSlot, 26))],
-      ['Necrotic', '?????'],
-    ]);
-  }, [setCountdowns, umi]);
-
-  const interval = useInterval(() => {
-    fetchAndUpdate().then((map) => setCountdowns(map));
-  }, 5000);
-
+  // Periodic fetch to rebase against actual blockchain state
   useEffect(() => {
-    fetchAndUpdate();
-    interval.start();
-    return interval.stop;
-  }, [fetchAndUpdate]);
+    let mounted = true;
+
+    const doFetch = async () => {
+      const success = await fetchAndRebase();
+      if (mounted && success) {
+        updateDisplay();
+        setLoading(false);
+      } else if (mounted) {
+        setLoading(false);
+      }
+    };
+
+    doFetch();
+    const fetchInterval = setInterval(doFetch, FETCH_INTERVAL_MS);
+
+    return () => {
+      mounted = false;
+      clearInterval(fetchInterval);
+    };
+  }, [fetchAndRebase, updateDisplay]);
+
+  // Update "last updated" display
+  useEffect(() => {
+    const displayInterval = setInterval(() => {
+      setLastUpdatedDisplay(formatLastUpdated(lastUpdated));
+    }, 1000);
+    return () => clearInterval(displayInterval);
+  }, [lastUpdated]);
+
+  const handleRetry = async () => {
+    setLoading(true);
+    const success = await fetchAndRebase();
+    if (success) updateDisplay();
+    setLoading(false);
+  };
 
   return (
     <Container size="lg" className={classes.wrapper}>
-      {/* <Group justify="center">
-        <Badge variant="filled" size="lg">
-          Best company ever
-        </Badge>
-      </Group> */}
-
-      <Title order={1} className={classes.title} ta="center" mt="sm">
-        Glyph Excavation Countdowns
+      <Title order={2} className={classes.title} ta="center" mt="sm">
+        Excavation Countdowns
       </Title>
 
       <Text c="dimmed" className={classes.description} ta="center" mt="md">
-        Minting uses the Glyph minting program which introduces specialized logic for generating and minting NFTs with rarities based on current Slot and Epoch. Custom logic is inspired by the Sat rarity concept implemented on Bitcoin.
+        Rarities unlock in mysterious intervals tied to Solana&apos;s blockchain rhythms.
+        Each glyph&apos;s power depends on the moment you mint it—making every excavation unique.
       </Text>
 
-      <SimpleGrid cols={{ base: 1, md: 4 }} spacing="xl" mt={50}>
-        {data.map((feature) => (
-          <Card key={feature.title} shadow="md" radius="md" className={classes.card} padding="md">
-            <Group gap="sm" justify="space-between">
-              <Stack justify="center" h="100%">
-                <feature.icon
-                  style={{ width: rem(50), height: rem(50) }}
-                  stroke={2}
-                  color={theme.colors.neonBlue[6]}
-                />
-                <Text fz="lg" fw={500} className={classes.cardTitle} mt="md">
-                  {feature.title}
-                </Text>
-              </Stack>
-              <Stack justify="center" h="100%">
-                <Badge size="xl" w="100%">
-                  {/* <Title order={5}> */}
-                  {countdowns.get(feature.title)}
-                  {/* </Title> */}
-                </Badge>
-                <Center>
-                  <Title order={5} c="dimmed">
-                    Slots
-                  </Title>
-                </Center>
-              </Stack>
-            </Group>
-          </Card>
-        ))}
+      {error && (
+        <Alert
+          icon={<IconAlertCircle size={16} />}
+          title="Connection Error"
+          color="red"
+          mt="lg"
+          withCloseButton
+          onClose={() => setError(null)}
+        >
+          <Group justify="space-between" align="center">
+            <Text size="sm">{error}</Text>
+            <Button
+              size="xs"
+              variant="light"
+              color="red"
+              leftSection={<IconRefresh size={14} />}
+              onClick={handleRetry}
+              loading={loading}
+            >
+              Retry
+            </Button>
+          </Group>
+        </Alert>
+      )}
+
+      {lastUpdatedDisplay && !error && (
+        <Text c="dimmed" size="sm" ta="center" mt="md">
+          Last updated: {lastUpdatedDisplay}
+        </Text>
+      )}
+
+      <SimpleGrid cols={{ base: 1, xs: 2, sm: 2, md: 3, lg: 4 }} spacing="xl" mt="xl">
+        {RARITIES.map((rarity) => {
+          const countData = displayCounts.get(rarity.title);
+          const rawCount = countData?.raw ?? null;
+          const isImminent = rawCount !== null && rawCount > 0 && rawCount <= IMMINENT_THRESHOLD;
+
+          return (
+            <Card
+              key={rarity.title}
+              shadow="md"
+              radius="md"
+              className={`${classes.card} ${classes[rarity.cssClass]}`}
+              padding="md"
+            >
+              <Group gap="sm" justify="space-between">
+                <Stack justify="center" h="100%">
+                  <rarity.icon
+                    className={classes.cardIcon}
+                    style={{ width: rem(50), height: rem(50) }}
+                    stroke={2}
+                    aria-hidden="true"
+                  />
+                  <Text fz="lg" fw={500} className={classes.cardTitle} mt="md">
+                    {rarity.title}
+                  </Text>
+                </Stack>
+                <Stack justify="center" h="100%">
+                  <Skeleton visible={loading} radius="xl">
+                    <Badge
+                      size="xl"
+                      w="100%"
+                      variant="light"
+                      className={`${classes.countdownBadge} ${isImminent ? classes.imminent : ''}`}
+                      aria-label={`${rarity.title} rarity countdown: ${countData?.formatted} slots remaining`}
+                    >
+                      {countData?.formatted}
+                    </Badge>
+                  </Skeleton>
+                  <Center>
+                    <Text size="sm" c="dimmed">
+                      Slots
+                    </Text>
+                  </Center>
+                </Stack>
+              </Group>
+            </Card>
+          );
+        })}
       </SimpleGrid>
+
+      <Center mt="xl">
+        <Tooltip
+          label="Glyph excavation will be available soon. Stay tuned for the launch date."
+          position="bottom"
+          withArrow
+        >
+          <Button
+            size="xl"
+            radius="xl"
+            disabled
+            className={classes.excavateButton}
+          >
+            Excavate Glyphs
+          </Button>
+        </Tooltip>
+      </Center>
     </Container>
   );
 }

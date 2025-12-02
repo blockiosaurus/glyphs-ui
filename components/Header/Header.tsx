@@ -1,59 +1,57 @@
-import { Center, Container, Flex, Group, Menu, Title, Image } from '@mantine/core';
-import { IconChevronDown } from '@tabler/icons-react';
+'use client';
+
+import Link from 'next/link';
+import { Container, Flex, Group, Title, Image, Burger, Drawer, Stack, Box } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
 import classes from './Header.module.css';
-import { Env } from '@/providers/useEnv';
-import RetainQueryLink from '../RetainQueryLink';
 
-const HeaderLink = ({ label, link, disabled }: { label: string, link: string, disabled?: boolean }) => {
-  const cls = disabled ? [classes.disabled, classes.link].join(' ') : classes.link;
-  return (
-    <RetainQueryLink href={link} className={cls}>
-      {label}
-    </RetainQueryLink>
-  );
-};
+export function Header() {
+  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
 
-export function Header({ env, setEnv }: { env: string; setEnv: (env: Env) => void }) {
   return (
-    <Container
-      size="xl"
-      h={80}
-      pt={12}
-    >
-      <div className={classes.inner}>
-        <Flex justify="center" align="center" gap="md">
-          <RetainQueryLink href="/">
-            <Image src="/logo.png" w={64} />
-          </RetainQueryLink>
-          <Title order={2}>Glyphs Quest</Title>
-        </Flex>
-        <Group>
-          <HeaderLink label="Excavate" link="/excavate" />
-          {/* <HeaderLink label="Explorer" link="/explorer" /> */}
-          <WalletMultiButton />
-          <Menu trigger="hover" transitionProps={{ exitDuration: 0 }} withinPortal>
-            <Menu.Target>
-              <a
-                href={undefined}
-                className={classes.link}
-                onClick={(event) => event.preventDefault()}
-              >
-                <Center>
-                  <span className={classes.linkLabel}>{env}</span>
-                  <IconChevronDown size="0.9rem" stroke={1.5} />
-                </Center>
-              </a>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item onClick={() => setEnv('mainnet')}>Mainnet</Menu.Item>
-              <Menu.Item onClick={() => setEnv('devnet')}>Devnet</Menu.Item>
-              <Menu.Item onClick={() => setEnv('localhost')}>Localhost</Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        </Group>
-      </div>
-    </Container>
+    <>
+      <Container size="xl" h={80} pt={12}>
+        <div className={classes.inner}>
+          <Flex justify="center" align="center" gap="md">
+            <Link href="/">
+              <Image src="/logo.png" w={64} alt="Glyphs Quest logo" />
+            </Link>
+            <Title order={2} className={classes.title}>Glyphs Quest</Title>
+          </Flex>
+
+          {/* Desktop Navigation */}
+          <Group className={classes.desktopNav}>
+            <WalletMultiButton />
+          </Group>
+
+          {/* Mobile Burger */}
+          <Burger
+            opened={drawerOpened}
+            onClick={toggleDrawer}
+            className={classes.burger}
+            aria-label="Toggle navigation menu"
+          />
+        </div>
+      </Container>
+
+      {/* Mobile Drawer */}
+      <Drawer
+        opened={drawerOpened}
+        onClose={closeDrawer}
+        size="100%"
+        padding="md"
+        title="Navigation"
+        className={classes.drawer}
+        zIndex={1000}
+      >
+        <Stack gap="lg">
+          <Box>
+            <WalletMultiButton />
+          </Box>
+        </Stack>
+      </Drawer>
+    </>
   );
 }

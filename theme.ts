@@ -1,6 +1,6 @@
 'use client';
 
-import { createTheme } from '@mantine/core';
+import { createTheme, rem } from '@mantine/core';
 
 export const theme = createTheme({
   colors: {
@@ -31,4 +31,27 @@ export const theme = createTheme({
   },
 
   primaryColor: 'neonPurple',
+
+  fontFamily: '"Inter", system-ui, -apple-system, sans-serif',
+
+  headings: {
+    fontFamily: '"Greycliff CF", system-ui, sans-serif',
+    fontWeight: '900',
+    sizes: {
+      h1: { fontSize: rem(44), lineHeight: '1.2' },
+      h2: { fontSize: rem(34), lineHeight: '1.3' },
+      h3: { fontSize: rem(24), lineHeight: '1.4' },
+    },
+  },
+
+  shadows: {
+    md: '0 4px 12px rgba(0, 0, 0, 0.15)',
+    lg: '0 8px 24px rgba(0, 0, 0, 0.2)',
+    glow: '0 0 20px rgba(58, 134, 255, 0.3)',
+    glowStrong: '0 0 30px rgba(58, 134, 255, 0.5)',
+  },
+
+  other: {
+    transitionDuration: '0.2s',
+  },
 });
