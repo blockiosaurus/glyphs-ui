@@ -15,8 +15,8 @@ import {
 } from '@mantine/core';
 import { IconCircleDot, IconSun, IconInfinity, IconTallymark4, IconPuzzle2, IconSkull, IconCircleRectangle, IconPrism, IconAlertCircle, IconRefresh } from '@tabler/icons-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { generateSigner, publicKey, Umi } from '@metaplex-foundation/umi';
-import { excavate, GLOBAL_SIGNER_ID, SLOT_TRACKER_ID } from '@breadheads/bgl-glyphs';
+import { generateSigner, Umi } from '@metaplex-foundation/umi';
+import { excavate } from '@breadheads/bgl-glyphs';
 import classes from './CountdownCards.module.css';
 import { useUmi } from '@/providers/useUmi';
 
@@ -237,10 +237,6 @@ export function CountdownCards() {
       console.log('Excavating Glyph');
       await excavate(umi, {
         asset: generateSigner(umi),
-        collection: publicKey(process.env.NEXT_PUBLIC_GLYPHS_COLLECTION_MINT!),
-        slotTracker: SLOT_TRACKER_ID,
-        glyphSigner: GLOBAL_SIGNER_ID,
-        mplCore: undefined,
       }).sendAndConfirm(umi);
     } finally {
       setExcavating(false);
