@@ -207,6 +207,16 @@
   animation: pulse-glow 1s ease-in-out infinite, shimmer 2s linear infinite;
 }
 
+/* Time estimate badge */
+.timeBadge {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  border-color: var(--rarity-color);
+  color: var(--mantine-color-gray-4);
+  background: transparent;
+}
+
 .wrapper {
   padding-top: calc(var(--mantine-spacing-md));
   padding-bottom: calc(var(--mantine-spacing-md));

@@ -80,6 +80,45 @@ function formatSlotCount(value: number): string {
   return Math.max(0, Math.floor(value)).toLocaleString();
 }
 
+function formatTimeEstimate(slots: number, slotDurationMs: number): string {
+  const totalMs = slots * slotDurationMs;
+  const totalSeconds = Math.floor(totalMs / 1000);
+
+  if (totalSeconds < 1) {
+    return 'now';
+  }
+  if (totalSeconds < 60) {
+    return `~${totalSeconds}s`;
+  }
+
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  if (totalMinutes < 60) {
+    return `~${totalMinutes}m`;
+  }
+
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (hours < 24) {
+    return minutes > 0 ? `~${hours}h ${minutes}m` : `~${hours}h`;
+  }
+
+  const days = Math.floor(hours / 24);
+  const remainingHours = hours % 24;
+  if (days < 30) {
+    return remainingHours > 0 ? `~${days}d ${remainingHours}h` : `~${days}d`;
+  }
+
+  const months = Math.floor(days / 30);
+  const remainingDays = days % 30;
+  if (months < 12) {
+    return remainingDays > 0 ? `~${months}mo ${remainingDays}d` : `~${months}mo`;
+  }
+
+  const years = Math.floor(months / 12);
+  const remainingMonths = months % 12;
+  return remainingMonths > 0 ? `~${years}y ${remainingMonths}mo` : `~${years}y`;
+}
+
 function formatLastUpdated(date: Date | null): string {
   if (!date) return '';
   const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
@@ -124,8 +163,8 @@ export function CountdownCards() {
   const prevSnapshotRef = useRef<SlotSnapshot | null>(null);
 
   // Current display values (updated frequently)
-  const [displayCounts, setDisplayCounts] = useState<Map<string, { formatted: string; raw: number | null }>>(() =>
-    new Map(RARITIES.map((r) => [r.title, { formatted: r.type === 'mystery' ? '?????' : '—', raw: null }]))
+  const [displayCounts, setDisplayCounts] = useState<Map<string, { formatted: string; raw: number | null; timeEstimate: string | null }>>(() =>
+    new Map(RARITIES.map((r) => [r.title, { formatted: r.type === 'mystery' ? '?????' : '—', raw: null, timeEstimate: null }]))
   );
 
   // Fetch fresh slot data and rebase
@@ -174,12 +213,14 @@ export function CountdownCards() {
     const state = estimateCurrentState();
     if (!state) return;
 
-    const newCounts = new Map<string, { formatted: string; raw: number | null }>();
+    const slotDuration = slotDurationRef.current;
+    const newCounts = new Map<string, { formatted: string; raw: number | null; timeEstimate: string | null }>();
     RARITIES.forEach((rarity) => {
       const count = getCountdown(rarity, state.slot, state.epochRemaining);
       newCounts.set(rarity.title, {
         formatted: count === null ? '?????' : formatSlotCount(count),
         raw: count,
+        timeEstimate: count === null ? null : formatTimeEstimate(count, slotDuration),
       });
     });
     setDisplayCounts(newCounts);
@@ -313,23 +354,39 @@ export function CountdownCards() {
                     {rarity.title}
                   </Text>
                 </Stack>
-                <Stack justify="center" h="100%">
+                <Stack justify="center" h="100%" gap="xs">
                   <Skeleton visible={loading} radius="xl">
-                    <Badge
-                      size="xl"
-                      w="100%"
-                      variant="light"
-                      className={`${classes.countdownBadge} ${isImminent ? classes.imminent : ''}`}
-                      aria-label={`${rarity.title} rarity countdown: ${countData?.formatted} slots remaining`}
-                    >
-                      {countData?.formatted}
-                    </Badge>
+                    <Stack gap={4}>
+                      <Badge
+                        size="xl"
+                        w="100%"
+                        variant="light"
+                        className={`${classes.countdownBadge} ${isImminent ? classes.imminent : ''}`}
+                        aria-label={`${rarity.title} rarity countdown: ${countData?.formatted} slots remaining`}
+                      >
+                        {countData?.formatted}
+                      </Badge>
+                      <Text size="xs" c="dimmed" ta="center">
+                        slots
+                      </Text>
+                    </Stack>
                   </Skeleton>
-                  <Center>
-                    <Text size="sm" c="dimmed">
-                      Slots
-                    </Text>
-                  </Center>
+                  <Skeleton visible={loading} radius="xl">
+                    <Stack gap={4}>
+                      <Badge
+                        size="lg"
+                        w="100%"
+                        variant="outline"
+                        className={classes.timeBadge}
+                        aria-label={`Estimated time: ${countData?.timeEstimate ?? 'unknown'}`}
+                      >
+                        {countData?.timeEstimate ?? '?????'}
+                      </Badge>
+                      <Text size="xs" c="dimmed" ta="center">
+                        est. time
+                      </Text>
+                    </Stack>
+                  </Skeleton>
                 </Stack>
               </Group>
             </Card>
