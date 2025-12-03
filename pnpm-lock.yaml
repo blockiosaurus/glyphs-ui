@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@breadheads/bgl-glyphs':
-    specifier: ^0.2.0
-    version: 0.2.0(@metaplex-foundation/umi@0.8.10)(@noble/hashes@1.8.0)(@solana/web3.js@1.98.4)
+    specifier: ^0.3.0
+    version: 0.3.0(@metaplex-foundation/umi@0.8.10)(@noble/hashes@1.8.0)(@solana/web3.js@1.98.4)
   '@mantine/carousel':
     specifier: ^7.3.2
     version: 7.17.8(@mantine/core@7.17.8)(@mantine/hooks@7.17.8)(embla-carousel-react@8.6.0)(react-dom@18.2.0)(react@18.2.0)
@@ -1616,8 +1616,8 @@ packages:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: true
 
-  /@breadheads/bgl-glyphs@0.2.0(@metaplex-foundation/umi@0.8.10)(@noble/hashes@1.8.0)(@solana/web3.js@1.98.4):
-    resolution: {integrity: sha512-G1G91uOziKClfICS2kPTRJUsX1IpHdxfFRuso+xE7auqgheAp7gHBJZZ0+KlUbBVjZt7C/a9P63n12xbnbaxVA==}
+  /@breadheads/bgl-glyphs@0.3.0(@metaplex-foundation/umi@0.8.10)(@noble/hashes@1.8.0)(@solana/web3.js@1.98.4):
+    resolution: {integrity: sha512-R55FSVebD1LiFsM9ZeMuN1+rEFky1zfxtAQZqUkD2YCb3VtVe1SKKOpEGH8jHqCRM2xbrHJ+NTjaWUmMEs7sbg==}
     peerDependencies:
       '@metaplex-foundation/umi': ^0.8.2
     dependencies:
