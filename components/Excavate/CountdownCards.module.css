@@ -241,3 +241,34 @@
     transform: translateY(-2px);
   }
 }
+
+/* ============================================
+   Tips Accordion
+   ============================================ */
+
+.tipsAccordion {
+  background: linear-gradient(
+    135deg,
+    rgba(20, 20, 25, 0.9) 0%,
+    rgba(58, 134, 255, 0.05) 100%
+  );
+  border: rem(1px) solid rgba(58, 134, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.tipsControl {
+  color: var(--mantine-color-gray-3);
+
+  &:hover {
+    background: rgba(58, 134, 255, 0.1);
+  }
+
+  &[data-active] {
+    background: rgba(58, 134, 255, 0.08);
+  }
+}
+
+.tipsPanel {
+  background: rgba(10, 10, 15, 0.5);
+  border-top: rem(1px) solid rgba(58, 134, 255, 0.1);
+}

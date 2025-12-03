@@ -12,8 +12,10 @@ import {
   Button,
   Skeleton,
   Alert,
+  Accordion,
+  ThemeIcon,
 } from '@mantine/core';
-import { IconCircleDot, IconSun, IconInfinity, IconTallymark4, IconPuzzle2, IconSkull, IconCircleRectangle, IconPrism, IconAlertCircle, IconRefresh } from '@tabler/icons-react';
+import { IconCircleDot, IconSun, IconInfinity, IconTallymark4, IconPuzzle2, IconSkull, IconCircleRectangle, IconPrism, IconAlertCircle, IconRefresh, IconBulb, IconClock, IconRocket, IconTarget } from '@tabler/icons-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { generateSigner, Umi } from '@metaplex-foundation/umi';
 import { excavate } from '@breadheads/bgl-glyphs';
@@ -334,6 +336,66 @@ export function CountdownCards() {
           );
         })}
       </SimpleGrid>
+
+      <Accordion
+        variant="contained"
+        radius="md"
+        mt="xl"
+        classNames={{
+          item: classes.tipsAccordion,
+          control: classes.tipsControl,
+          panel: classes.tipsPanel,
+        }}
+      >
+        <Accordion.Item value="tips">
+          <Accordion.Control icon={<IconBulb size={20} />}>
+            Excavation Tips & How It Works
+          </Accordion.Control>
+          <Accordion.Panel>
+            <Stack gap="md">
+              <Group gap="sm" align="flex-start" wrap="nowrap">
+                <ThemeIcon variant="light" size="lg" radius="xl" color="blue">
+                  <IconClock size={18} />
+                </ThemeIcon>
+                <div>
+                  <Text fw={500} size="sm">Understanding Slots</Text>
+                  <Text size="sm" c="dimmed">
+                    Solana processes transactions in &quot;slots&quot; (~400ms each). The countdowns show how many slots remain until each rarity becomes available. Multiply by 0.4 seconds for approximate real time.
+                  </Text>
+                </div>
+              </Group>
+
+              <Group gap="sm" align="flex-start" wrap="nowrap">
+                <ThemeIcon variant="light" size="lg" radius="xl" color="violet">
+                  <IconTarget size={18} />
+                </ThemeIcon>
+                <div>
+                  <Text fw={500} size="sm">When Rarity Is Determined</Text>
+                  <Text size="sm" c="dimmed">
+                    Your glyph&apos;s rarity is determined by the slot when your transaction <strong>confirms on-chain</strong>—not when you click the button. This is the key to strategic excavation.
+                  </Text>
+                </div>
+              </Group>
+
+              <Group gap="sm" align="flex-start" wrap="nowrap">
+                <ThemeIcon variant="light" size="lg" radius="xl" color="teal">
+                  <IconRocket size={18} />
+                </ThemeIcon>
+                <div>
+                  <Text fw={500} size="sm">Account for Transaction Latency</Text>
+                  <Text size="sm" c="dimmed">
+                    Transactions typically take 2-5 seconds to confirm. For rare glyphs, click <strong>before</strong> the countdown reaches zero—aim to have your transaction confirm right as the rarity window opens.
+                  </Text>
+                </div>
+              </Group>
+
+              <Text size="sm" c="dimmed" mt="xs">
+                <strong>Pro tip:</strong> Watch for the shimmer animation when a countdown is imminent (under 100 slots). At ~400ms per slot, 100 slots ≈ 40 seconds—plenty of time to prepare and click early.
+              </Text>
+            </Stack>
+          </Accordion.Panel>
+        </Accordion.Item>
+      </Accordion>
 
       <Center mt="xl">
         <Button
