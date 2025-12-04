@@ -15,8 +15,10 @@ import {
   Accordion,
   ThemeIcon,
 } from '@mantine/core';
-import { IconCircleDot, IconSun, IconInfinity, IconTallymark4, IconPuzzle2, IconSkull, IconCircleRectangle, IconPrism, IconAlertCircle, IconRefresh, IconBulb, IconClock, IconRocket, IconTarget } from '@tabler/icons-react';
+import { IconCircleDot, IconSun, IconInfinity, IconTallymark4, IconPuzzle2, IconSkull, IconCircleRectangle, IconPrism, IconAlertCircle, IconRefresh, IconBulb, IconClock, IconRocket, IconTarget, IconWallet } from '@tabler/icons-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { generateSigner, Umi } from '@metaplex-foundation/umi';
 import { excavate } from '@breadheads/bgl-glyphs';
 import classes from './CountdownCards.module.css';
@@ -149,6 +151,8 @@ function getCountdown(
 
 export function CountdownCards() {
   const umi = useUmi();
+  const { connected } = useWallet();
+  const { setVisible: setWalletModalVisible } = useWalletModal();
   const [loading, setLoading] = useState(true);
   const [excavating, setExcavating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -270,7 +274,12 @@ export function CountdownCards() {
     setLoading(false);
   };
 
-  const handleExcavate = async () => {
+  const handleButtonClick = async () => {
+    if (!connected) {
+      setWalletModalVisible(true);
+      return;
+    }
+
     setExcavating(true);
     try {
       // TODO: Implement excavation logic
@@ -459,10 +468,11 @@ export function CountdownCards() {
           size="xl"
           radius="xl"
           className={classes.excavateButton}
-          onClick={handleExcavate}
+          onClick={handleButtonClick}
           loading={excavating}
+          leftSection={!connected ? <IconWallet size={24} /> : undefined}
         >
-          Excavate Glyphs
+          {connected ? 'Excavate Glyphs' : 'Connect Wallet'}
         </Button>
       </Center>
     </Container>

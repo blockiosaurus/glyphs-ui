@@ -1,15 +1,11 @@
 'use client';
 
-import { Container, Title, Text, Box, Paper, Center, Stack } from '@mantine/core';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { Container, Title, Text, Box } from '@mantine/core';
 import Image from 'next/image';
 import classes from './Landing.module.css';
 import { CountdownCards } from '../Excavate/CountdownCards';
 
 export function Landing() {
-  const wallet = useWallet();
-
   return (
     <>
       <div className={classes.heroSection}>
@@ -37,20 +33,7 @@ export function Landing() {
         </Container>
       </div>
       <Box bg="rgb(12, 12, 12)" pb="xl" pt="md">
-        {wallet.connected ? (
-          <CountdownCards />
-        ) : (
-          <Container size="lg">
-            <Paper mt="xl" p="xl">
-              <Center h="20vh">
-                <Stack align="center" gap="lg">
-                  <Text ta="center">Connect your wallet to explore excavation countdowns and prepare for glyph minting.</Text>
-                  <WalletMultiButton />
-                </Stack>
-              </Center>
-            </Paper>
-          </Container>
-        )}
+        <CountdownCards />
       </Box>
     </>
   );
