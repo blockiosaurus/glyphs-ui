@@ -15,7 +15,7 @@ import {
   Accordion,
   ThemeIcon,
 } from '@mantine/core';
-import { IconCircleDot, IconSun, IconInfinity, IconTallymark4, IconPuzzle2, IconSkull, IconCircleRectangle, IconPrism, IconAlertCircle, IconRefresh, IconBulb, IconClock, IconRocket, IconTarget, IconWallet } from '@tabler/icons-react';
+import { IconCircleDot, IconSun, IconInfinity, IconTallymark4, IconPuzzle2, IconSkull, IconCircleRectangle, IconPrism, IconAlertCircle, IconRefresh, IconBulb, IconClock, IconRocket, IconTarget, IconWallet, IconDiamond } from '@tabler/icons-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
@@ -457,6 +457,103 @@ export function CountdownCards() {
 
               <Text size="sm" c="dimmed" mt="xs">
                 <strong>Pro tip:</strong> Watch for the shimmer animation when a countdown is imminent (under 100 slots). At ~400ms per slot, 100 slots ≈ 40 seconds—plenty of time to prepare and click early.
+              </Text>
+            </Stack>
+          </Accordion.Panel>
+        </Accordion.Item>
+
+        <Accordion.Item value="rarities">
+          <Accordion.Control icon={<IconDiamond size={20} />}>
+            Rarity Guide
+          </Accordion.Control>
+          <Accordion.Panel>
+            <Stack gap="sm">
+              <Text size="sm" c="dimmed" mb="xs">
+                Rarity is determined by the Solana slot number when your transaction confirms. Rarer glyphs only appear at specific slot intervals.
+              </Text>
+
+              <Group gap="sm" align="center" wrap="nowrap">
+                <ThemeIcon variant="light" size="md" radius="xl" color="gray">
+                  <IconCircleDot size={16} />
+                </ThemeIcon>
+                <div style={{ flex: 1 }}>
+                  <Text fw={500} size="sm">Stone</Text>
+                </div>
+                <Badge size="sm" variant="outline" color="gray">Always</Badge>
+              </Group>
+
+              <Group gap="sm" align="center" wrap="nowrap">
+                <ThemeIcon variant="light" size="md" radius="xl" color="teal">
+                  <IconCircleRectangle size={16} />
+                </ThemeIcon>
+                <div style={{ flex: 1 }}>
+                  <Text fw={500} size="sm">Jade</Text>
+                </div>
+                <Badge size="sm" variant="outline" color="teal">Every 1,024 slots (~7 min)</Badge>
+              </Group>
+
+              <Group gap="sm" align="center" wrap="nowrap">
+                <ThemeIcon variant="light" size="md" radius="xl" color="orange">
+                  <IconPrism size={16} />
+                </ThemeIcon>
+                <div style={{ flex: 1 }}>
+                  <Text fw={500} size="sm">Bronze</Text>
+                </div>
+                <Badge size="sm" variant="outline" color="orange">Once per epoch (~2-3 days)</Badge>
+              </Group>
+
+              <Group gap="sm" align="center" wrap="nowrap">
+                <ThemeIcon variant="light" size="md" radius="xl" color="gray.4">
+                  <IconPuzzle2 size={16} />
+                </ThemeIcon>
+                <div style={{ flex: 1 }}>
+                  <Text fw={500} size="sm">Silver</Text>
+                </div>
+                <Badge size="sm" variant="outline" color="gray.4">Every 1M slots (~5 days)</Badge>
+              </Group>
+
+              <Group gap="sm" align="center" wrap="nowrap">
+                <ThemeIcon variant="light" size="md" radius="xl" color="yellow">
+                  <IconSun size={16} />
+                </ThemeIcon>
+                <div style={{ flex: 1 }}>
+                  <Text fw={500} size="sm">Gold</Text>
+                </div>
+                <Badge size="sm" variant="outline" color="yellow">Every 4M slots (~19 days)</Badge>
+              </Group>
+
+              <Group gap="sm" align="center" wrap="nowrap">
+                <ThemeIcon variant="light" size="md" radius="xl" color="violet">
+                  <IconInfinity size={16} />
+                </ThemeIcon>
+                <div style={{ flex: 1 }}>
+                  <Text fw={500} size="sm">Obsidian</Text>
+                </div>
+                <Badge size="sm" variant="outline" color="violet">Every 16M slots (~78 days)</Badge>
+              </Group>
+
+              <Group gap="sm" align="center" wrap="nowrap">
+                <ThemeIcon variant="light" size="md" radius="xl" color="pink">
+                  <IconTallymark4 size={16} />
+                </ThemeIcon>
+                <div style={{ flex: 1 }}>
+                  <Text fw={500} size="sm">Neon</Text>
+                </div>
+                <Badge size="sm" variant="outline" color="pink">Every 67M slots (~310 days)</Badge>
+              </Group>
+
+              <Group gap="sm" align="center" wrap="nowrap">
+                <ThemeIcon variant="light" size="md" radius="xl" color="lime">
+                  <IconSkull size={16} />
+                </ThemeIcon>
+                <div style={{ flex: 1 }}>
+                  <Text fw={500} size="sm">Necrotic</Text>
+                </div>
+                <Badge size="sm" variant="outline" color="lime">??? (Mystery)</Badge>
+              </Group>
+
+              <Text size="xs" c="dimmed" mt="xs">
+                Higher rarities stack with lower ones—when a Gold slot hits, you also get Silver, Jade, and Stone eligibility.
               </Text>
             </Stack>
           </Accordion.Panel>
